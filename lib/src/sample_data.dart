@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'models.dart';
 import 'theme.dart';
 
-const privacyPolicyUrl = 'https://campuslink.app/privacy-policy';
+const privacyPolicyUrl = 'https://abm.laozhangchaye.cn/privacy.html';
 const privacyPolicyEffectiveDate = '2026 年 5 月 30 日';
 
 const schoolOptions = <SchoolOption>[

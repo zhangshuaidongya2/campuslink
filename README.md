@@ -26,3 +26,8 @@
 - Bundle Identifier: `com.campuslink.deviceassistant`
 
 如果你在 App Store Connect 里已经创建了正式 App ID，请把 bundle identifier 改成你自己的正式值再归档。
+
+## 隐私政策站点
+
+- 可独立上传的静态隐私政策页面在 [privacy-policy-site/index.html](privacy-policy-site/index.html)
+- 当前正式隐私政策链接：`https://abm.laozhangchaye.cn/privacy.html`
