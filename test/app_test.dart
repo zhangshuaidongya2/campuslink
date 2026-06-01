@@ -29,19 +29,19 @@ void main() {
     await tester.pumpWidget(const CampusLinkApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('當前設備預設未納入學校監管'), findsOneWidget);
+    expect(find.text('目前設備尚未納管'), findsOneWidget);
     expect(find.text('查看課程表'), findsOneWidget);
 
     await tester.tap(find.text('IT 服務'));
     await tester.pumpAndSettle();
 
-    expect(find.text('设备故障报修与支持'), findsOneWidget);
+    expect(find.text('設備報修與 IT 支援'), findsOneWidget);
     expect(find.text('接入管理后可提交'), findsOneWidget);
 
     await tester.tap(find.text('隱私政策'));
     await tester.pumpAndSettle();
 
-    expect(find.text('正式隱私政策與資料邊界'), findsOneWidget);
+    expect(find.text('隱私政策與資料邊界'), findsOneWidget);
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, null);

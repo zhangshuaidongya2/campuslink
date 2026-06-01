@@ -344,11 +344,13 @@ class OverviewTab extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           _PageHeader(
-            eyebrow: 'Campus Device Dashboard',
-            title: isManaged ? '当前設備已接入學校管理' : '當前設備預設未納入學校監管',
+            eyebrow: '裝置總覽 · Device Overview',
+            title: isManaged ? '設備已接入學校管理' : '目前設備尚未納管',
             description: isManaged
-                ? '已從當前設備讀取到學校管理配置。你可以繼續查看課表、公告、借用期限與 IT 支援。'
-                : 'App 已讀取目前設備資訊，但未發現學校監管配置。你仍可先選擇香港學校、完成設備綁定並查閱標準課表。',
+                ? '已從本機讀取學校管理配置，可繼續查看課表、公告、借用期限與 IT 支援。'
+                : '目前只讀取到裝置基本資訊，尚未發現學校管理配置。你仍可先選擇學校、完成綁定並查閱標準課表。',
+            statusLabel: isManaged ? '已納管' : '未納管',
+            statusColor: isManaged ? AppColors.signalBlue : AppColors.coral,
           ),
           const SizedBox(height: 18),
           _HeroCard(
@@ -557,11 +559,13 @@ class TimetableTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _PageHeader(
-            eyebrow: 'School Timetable',
-            title: '學校課程表',
+            eyebrow: '課程安排 · School Timetable',
+            title: '今日課程與輪轉安排',
             description: isManaged
                 ? '目前設備已接入 ${school.name} 的管理配置，可查看對應班別的輪轉課表與上課時段。'
-                : '目前設備未發現學校監管配置，因此先顯示所選學校的標準課表與輪轉日安排。',
+                : '目前設備未發現學校監管配置，先顯示所選學校的標準課表與輪轉日安排。',
+            statusLabel: school.schedulePattern,
+            statusColor: AppColors.signalBlue,
           ),
           const SizedBox(height: 18),
           AdaptiveGrid(
@@ -774,10 +778,14 @@ class _ServiceTabState extends State<ServiceTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _PageHeader(
-            eyebrow: 'IT Service',
-            title: '设备故障报修与支持',
-            description: '提交课堂故障、网络异常和借用问题。这里只记录你主动填写的报修信息，不会读取其他个人数据。',
+          _PageHeader(
+            eyebrow: 'IT 服務 · Service Desk',
+            title: '設備報修與 IT 支援',
+            description: '提交課堂設備、網路異常與借用問題。這裡只記錄你主動填寫的工單內容，不會讀取其他私人資料。',
+            statusLabel: widget.isManaged ? '可提交工單' : '待學校納管',
+            statusColor: widget.isManaged
+                ? AppColors.signalBlue
+                : AppColors.coral,
           ),
           const SizedBox(height: 18),
           if (!widget.isManaged)
@@ -1046,9 +1054,11 @@ class PrivacyTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _PageHeader(
-            eyebrow: 'Privacy Policy',
-            title: '正式隱私政策與資料邊界',
-            description: '這裡說明校園設備助手如何處理與校園設備管理相關的資料，以及學校可以看到和不能看到的內容。',
+            eyebrow: '隱私政策 · Privacy Policy',
+            title: '隱私政策與資料邊界',
+            description: '這裡說明校園設備助手如何處理校務所需資料，以及學校可以看到和不能看到的內容。',
+            statusLabel: '公開政策',
+            statusColor: AppColors.signalBlue,
           ),
           const SizedBox(height: 18),
           _SectionCard(
@@ -1335,34 +1345,133 @@ class _PageHeader extends StatelessWidget {
     required this.eyebrow,
     required this.title,
     required this.description,
+    this.statusLabel,
+    this.statusColor = AppColors.signalBlue,
   });
 
   final String eyebrow;
   final String title;
   final String description;
+  final String? statusLabel;
+  final Color statusColor;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 520;
+        final titleStyle = theme.textTheme.displaySmall?.copyWith(
+          fontSize: isCompact ? 26 : 32,
+          height: isCompact ? 1.1 : 1.06,
+          letterSpacing: isCompact ? -0.45 : -0.75,
+        );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          eyebrow,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: AppColors.signalBlue,
-            fontWeight: FontWeight.w600,
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.fromLTRB(18, isCompact ? 18 : 22, 18, 18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: AppColors.outline),
+            gradient: const LinearGradient(
+              colors: [Colors.white, AppColors.skyWash],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [cardShadow],
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(title, style: theme.textTheme.displaySmall),
-        const SizedBox(height: 10),
-        Text(
-          description,
-          style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.ash),
-        ),
-      ],
+          child: Stack(
+            children: [
+              Positioned(
+                right: -12,
+                top: -10,
+                child: Container(
+                  width: isCompact ? 72 : 96,
+                  height: isCompact ? 72 : 96,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.signalBlue.withValues(alpha: 0.14),
+                        AppColors.signalBlue.withValues(alpha: 0.02),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: AppColors.outline),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: AppColors.signalBlue,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              eyebrow,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: AppColors.signalBlue,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.25,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (statusLabel != null)
+                        _Tag(label: statusLabel!, color: statusColor),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isCompact ? constraints.maxWidth : 620,
+                    ),
+                    child: Text(title, style: titleStyle),
+                  ),
+                  const SizedBox(height: 10),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isCompact ? constraints.maxWidth : 700,
+                    ),
+                    child: Text(
+                      description,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: AppColors.ash,
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
