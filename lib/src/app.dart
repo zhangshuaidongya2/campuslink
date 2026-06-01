@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'device_service.dart';
 import 'local_store.dart';
 import 'models.dart';
+import 'network_service.dart';
 import 'sample_data.dart';
 import 'theme.dart';
 
@@ -669,11 +670,14 @@ class ServiceTab extends StatefulWidget {
 
 class _ServiceTabState extends State<ServiceTab> {
   final _formKey = GlobalKey<FormState>();
+  final CampusNetworkService _networkService = CampusNetworkService();
   late final TextEditingController _titleController;
   late final TextEditingController _locationController;
   late final TextEditingController _descriptionController;
   String _selectedCategory = _categories.first;
   String _selectedPriority = _priorities[1];
+  bool _isRunningNetworkCheck = false;
+  String _networkCheckSummary = '尚未檢測校內局域網服務';
 
   static const _categories = <String>['課室設備', '網絡連線', '借用與歸還', '課表與班別'];
   static const _priorities = <String>['低', '中', '高'];
@@ -729,6 +733,36 @@ class _ServiceTabState extends State<ServiceTab> {
         content: Text('报修已提交: ${ticket.ticketId}'),
         behavior: SnackBarBehavior.floating,
       ),
+    );
+  }
+
+  Future<void> _runSchoolNetworkCheck() async {
+    if (_isRunningNetworkCheck) {
+      return;
+    }
+
+    setState(() {
+      _isRunningNetworkCheck = true;
+      _networkCheckSummary = '正在檢測公開連線與校內局域網服務...';
+    });
+
+    final result = await _networkService.runSchoolNetworkCheck(
+      privacyPolicyUrl,
+    );
+    if (!mounted) {
+      return;
+    }
+
+    final summary =
+        '公開連線: ${result.publicStatusLabel} · 本地網路: ${result.localNetworkMessage}';
+
+    setState(() {
+      _isRunningNetworkCheck = false;
+      _networkCheckSummary = summary;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(summary), behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -907,6 +941,48 @@ class _ServiceTabState extends State<ServiceTab> {
                       onPressed: () =>
                           _showContactDialog(context, widget.contact),
                       child: const Text('查看值班說明'),
+                    ),
+                  ],
+                ),
+              ),
+              _SectionCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('校內網路檢測', style: theme.textTheme.titleLarge),
+                    const SizedBox(height: 6),
+                    Text(
+                      '此功能會先透過第三方網路庫檢查公開連線，再發起一次 iOS 本地網路探測。首次在真機上操作時，系統可能顯示本地網路權限提示。',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: AppColors.skyWash,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        _networkCheckSummary,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: AppColors.primaryAction,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: _isRunningNetworkCheck
+                          ? null
+                          : _runSchoolNetworkCheck,
+                      child: Text(
+                        _isRunningNetworkCheck ? '檢測中...' : '檢測校內局域網服務',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '注意：普通 HTTPS 請求本身不會彈出 iOS 權限框；系統彈窗來自本地網路訪問。',
+                      style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),

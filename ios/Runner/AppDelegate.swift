@@ -1,9 +1,13 @@
 import Flutter
+import Network
 import UIKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
   private let deviceChannelName = "campuslink/device_info"
+  private let networkChannelName = "campuslink/network_tools"
+  private var localNetworkBrowser: NWBrowser?
+  private var localNetworkCleanupWorkItem: DispatchWorkItem?
 
   override func application(
     _ application: UIApplication,
@@ -24,6 +28,24 @@ import UIKit
         }
 
         result(self?.buildCurrentDevicePayload() ?? [:])
+      }
+
+      let networkChannel = FlutterMethodChannel(
+        name: networkChannelName,
+        binaryMessenger: controller.binaryMessenger
+      )
+
+      networkChannel.setMethodCallHandler { [weak self] call, result in
+        guard call.method == "requestLocalNetworkPermission" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+
+        self?.startLocalNetworkProbe()
+        result([
+          "status": "started",
+          "message": "已發起本地網路檢測；首次在真機上操作時，iOS 可能會顯示本地網路權限提示。"
+        ])
       }
     }
 
@@ -106,5 +128,34 @@ import UIKit
       }
       identifier.append(Character(UnicodeScalar(UInt8(value))))
     }
+  }
+
+  private func startLocalNetworkProbe() {
+    localNetworkCleanupWorkItem?.cancel()
+    localNetworkCleanupWorkItem = nil
+    localNetworkBrowser?.cancel()
+    localNetworkBrowser = nil
+
+    let parameters = NWParameters.tcp
+    parameters.includePeerToPeer = true
+
+    let browser = NWBrowser(
+      for: .bonjour(type: "_http._tcp", domain: nil),
+      using: parameters
+    )
+
+    browser.stateUpdateHandler = { _ in }
+    browser.browseResultsChangedHandler = { _, _ in }
+    browser.start(queue: .main)
+    localNetworkBrowser = browser
+
+    let cleanup = DispatchWorkItem { [weak self] in
+      self?.localNetworkBrowser?.cancel()
+      self?.localNetworkBrowser = nil
+      self?.localNetworkCleanupWorkItem = nil
+    }
+
+    localNetworkCleanupWorkItem = cleanup
+    DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: cleanup)
   }
 }

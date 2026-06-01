@@ -18,29 +18,13 @@
                         <subviews>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="校园设备助手" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3pT-rU-kHT">
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                <color key="textColor" red="0.05882352941" green="0.1215686275" blue="0.2392156863" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="学校设备纳管与服务" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FjQ-r8-l4J">
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.4117647059" green="0.4156862745" blue="0.4470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.9882352941" green="0.9882352941" blue="0.9882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="1a2-6s-vTC"/>
-                            <constraint firstItem="3pT-rU-kHT" firstAttribute="top" secondItem="YRO-k0-Ey4" secondAttribute="bottom" constant="24" id="2ga-Hc-m2T"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-46" id="4X2-HB-R7a"/>
-                            <constraint firstItem="FjQ-r8-l4J" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="73J-KU-z6m"/>
-                            <constraint firstItem="3pT-rU-kHT" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="8bh-DT-FgM"/>
-                            <constraint firstItem="FjQ-r8-l4J" firstAttribute="top" secondItem="3pT-rU-kHT" secondAttribute="bottom" constant="8" id="BEH-vS-G4j"/>
+                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4X2-HB-R7a"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="height" secondItem="YRO-k0-Ey4" secondAttribute="width" id="VrF-LT-wWf"/>
-                            <constraint firstAttribute="trailing" secondItem="3pT-rU-kHT" secondAttribute="trailing" constant="32" id="Vwy-sz-0ah"/>
                             <constraint firstItem="YRO-k0-Ey4" firstAttribute="width" constant="112" id="aUR-Ct-HCO"/>
-                            <constraint firstItem="3pT-rU-kHT" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" constant="32" id="oyq-Rg-nUT"/>
                         </constraints>
                     </view>
                 </viewController>
